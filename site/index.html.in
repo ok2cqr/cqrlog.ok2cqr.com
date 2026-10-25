@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CQRLOG – advanced ham radio logger for Linux and macOS</title>
+<meta name="description" content="CQRLOG is a free, open-source ham radio logger for Linux and macOS, focused on everyday HF logging of CW and SSB contacts. Current version {{version}}.">
+<link rel="canonical" href="https://cqrlog.ok2cqr.com/">
+<script>
+try { var t = localStorage.getItem('cqrlog-theme'); if (t) document.documentElement.setAttribute('data-theme', t); } catch (e) {}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root,[data-theme=light]{color-scheme:light;--bg:#ffffff;--ink:#1a1c1e;--ink2:#555b60;--line:#e2e3df;--soft:#f5f5f2;--accent:oklch(0.47 0.11 160);--accent-hover:oklch(0.40 0.11 160);--accent-ink:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){color-scheme:dark;--bg:#121416;--ink:#e6e8e6;--ink2:#a3aaa8;--line:#2a2f33;--soft:#1a1d20;--accent:oklch(0.80 0.13 160);--accent-hover:oklch(0.86 0.12 160);--accent-ink:#0b0c0e}}
+[data-theme=dark]{color-scheme:dark;--bg:#121416;--ink:#e6e8e6;--ink2:#a3aaa8;--line:#2a2f33;--soft:#1a1d20;--accent:oklch(0.80 0.13 160);--accent-hover:oklch(0.86 0.12 160);--accent-ink:#0b0c0e}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:64px}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Public Sans",system-ui,sans-serif;font-size:17px;line-height:1.6;-webkit-font-smoothing:antialiased}
+a{color:var(--accent);text-underline-offset:3px}
+a:hover{color:var(--accent-hover)}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.88em;background:var(--soft);border:1px solid var(--line);border-radius:4px;padding:1px 5px;overflow-wrap:anywhere}
+.wrap{max-width:960px;margin:0 auto;padding:0 20px}
+.text{max-width:720px}
+
+header{position:sticky;top:0;z-index:10;background:var(--bg);border-bottom:1px solid var(--line)}
+header .wrap{min-height:56px;display:flex;align-items:center;gap:8px 28px;flex-wrap:wrap}
+.brand{font-weight:700;font-size:18px;color:var(--ink);text-decoration:none}
+.brand:hover{color:var(--ink)}
+nav{display:flex;gap:4px 20px;flex-wrap:wrap;flex:1;font-size:15px}
+nav a{color:var(--ink2);text-decoration:none}
+nav a:hover{color:var(--ink)}
+#theme{font:inherit;font-size:14px;color:var(--ink2);background:none;border:0;padding:6px 0;cursor:pointer}
+#theme:hover{color:var(--ink)}
+
+section{padding:56px 0 0}
+section.hero{padding-top:48px}
+h1{margin:0;font-size:clamp(28px,4vw,38px);line-height:1.2;font-weight:700;letter-spacing:-.01em}
+.subtitle{margin:6px 0 0;font-size:19px;color:var(--ink2)}
+.release{margin:10px 0 0;font-size:15px;color:var(--ink2)}
+.zoom{cursor:zoom-in}
+.shot{display:block;width:100%;height:auto;margin-top:32px;border:1px solid var(--line);border-radius:6px}
+h2{margin:0 0 14px;font-size:24px;font-weight:700}
+h3{margin:0 0 4px;font-size:17px;font-weight:600}
+p{margin:0 0 14px;text-wrap:pretty}
+ul.plain{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px}
+
+.items{display:flex;flex-direction:column;gap:20px}
+.items p{margin:0;color:var(--ink2)}
+.items p + p{margin-top:8px}
+
+.changelog{border-top:1px solid var(--line)}
+.changelog details{border-bottom:1px solid var(--line)}
+.changelog summary{list-style:none;cursor:pointer;display:flex;align-items:baseline;gap:12px;padding:12px 0}
+.changelog summary::-webkit-details-marker{display:none}
+.changelog summary::before{content:"▸";width:14px;flex:none;color:var(--ink2);font-size:13px}
+.changelog details[open] summary::before{content:"▾"}
+.changelog summary strong{font-weight:600}
+.changelog summary span{color:var(--ink2);font-size:15px}
+.changelog .body{padding:0 0 16px 26px}
+.changelog .kind{margin:8px 0 4px;font-size:14px;font-weight:600;color:var(--ink2)}
+.changelog .kind:first-child{margin-top:0}
+.changelog ul{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px}
+
+.lead{margin:0 0 18px;color:var(--ink2);font-size:15px}
+.downloads{border-top:1px solid var(--line)}
+.dl{display:flex;flex-wrap:wrap;align-items:center;gap:6px 16px;padding:14px 0;border-bottom:1px solid var(--line)}
+.dl .what{flex:1 1 260px}
+.dl .what strong{font-weight:600}
+.dl .what span{color:var(--ink2)}
+.dl .alt{font-size:15px;color:var(--ink2)}
+.btn{padding:7px 16px;border-radius:5px;background:var(--accent);color:var(--accent-ink);text-decoration:none;font-weight:600;font-size:15px}
+.btn:hover{background:var(--accent-hover);color:var(--accent-ink)}
+.small{margin:14px 0 0;font-size:15px;color:var(--ink2)}
+
+@media (max-width:640px){header{position:static}html{scroll-padding-top:8px}header .wrap{padding-top:10px;padding-bottom:10px}nav{flex-basis:100%;order:3;gap:4px 16px}}
+.gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:20px 16px;margin:20px 0 0;padding:0;list-style:none}
+.gallery a{display:block;color:var(--ink2);text-decoration:none;font-size:14px;line-height:1.4}
+.gallery a:hover{color:var(--ink)}
+.gallery img{display:block;width:100%;height:auto;aspect-ratio:16/10;object-fit:scale-down;background:var(--soft);border:1px solid var(--line);border-radius:6px;padding:8px;margin-bottom:6px}
+.gallery a:hover img{border-color:var(--ink2)}
+#viewer{max-width:none;max-height:none;width:100%;height:100%;margin:0;padding:16px;border:0;background:transparent;color:#e6e8e6}
+#viewer::backdrop{background:rgba(8,9,10,.92)}
+#viewer[open]{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px}
+#viewer img{max-width:100%;max-height:calc(100% - 80px);width:auto;height:auto;border-radius:6px;cursor:pointer}
+#viewer p{margin:0;font-size:15px;text-align:center}
+#viewer .nav{display:flex;gap:20px;font-size:14px}
+#viewer button{font:inherit;color:#e6e8e6;background:none;border:1px solid #555b60;border-radius:5px;padding:4px 12px;cursor:pointer}
+#viewer button:hover{border-color:#e6e8e6}
+footer{margin-top:72px;border-top:1px solid var(--line)}
+footer .wrap{padding:20px;font-size:14px;color:var(--ink2);display:flex;flex-wrap:wrap;gap:4px 20px}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a class="brand" href="#top">CQRLOG</a>
+    <nav>
+      <a href="#about">About</a>
+      <a href="#features">Features</a>
+      <a href="#news">News</a>
+      <a href="#download">Download</a>
+      <a href="#faq">FAQ</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <button id="theme" type="button">Dark mode</button>
+  </div>
+</header>
+
+<main id="top" class="wrap">
+
+  <section class="hero">
+    <h1>CQRLOG</h1>
+    <p class="subtitle">Advanced ham radio logger for Linux and macOS</p>
+    <p class="release">Version {{version}}, released {{date}} · <a href="#download">Download</a> · <a href="#news">What’s new</a></p>
+    <a class="zoom" href="assets/cqrlog-darkmode.png"><img class="shot" src="assets/cqrlog-darkmode.png" width="1920" height="1200" alt="CQRLOG main window with New QSO, band map, grayline and DX cluster"></a>
+    <ul class="gallery">
+      <li><a href="assets/gallery/01-new-qso.png"><img src="assets/gallery/01-new-qso.png" width="819" height="1160" alt="New QSO: previous contacts, DXCC and callbook data" loading="lazy">New QSO: previous contacts, DXCC and callbook data</a></li>
+      <li><a href="assets/gallery/02-qso-list.png"><img src="assets/gallery/02-qso-list.png" width="986" height="697" alt="QSO list with QSL and LoTW status" loading="lazy">QSO list with QSL and LoTW status</a></li>
+      <li><a href="assets/gallery/03-details-window.png"><img src="assets/gallery/03-details-window.png" width="274" height="165" alt="Details: confirmed zones and club memberships of the station" loading="lazy">Details: confirmed zones and club memberships of the station</a></li>
+      <li><a href="assets/gallery/04-graline.png"><img src="assets/gallery/04-graline.png" width="557" height="323" alt="Grayline map with a live RBN spot" loading="lazy">Grayline map with a live RBN spot</a></li>
+      <li><a href="assets/gallery/05-propagation.png"><img src="assets/gallery/05-propagation.png" width="274" height="325" alt="Propagation data from DK0WCY" loading="lazy">Propagation data from DK0WCY</a></li>
+      <li><a href="assets/gallery/06-dxcluster.png"><img src="assets/gallery/06-dxcluster.png" width="572" height="711" alt="DX cluster, spots coloured by what you need" loading="lazy">DX cluster, spots coloured by what you need</a></li>
+      <li><a href="assets/gallery/07-qso-filter.png"><img src="assets/gallery/07-qso-filter.png" width="819" height="761" alt="QSO filter" loading="lazy">QSO filter</a></li>
+      <li><a href="assets/gallery/08-preferences-new-qso.png"><img src="assets/gallery/08-preferences-new-qso.png" width="1177" height="751" alt="Preferences: New QSO" loading="lazy">Preferences: New QSO</a></li>
+      <li><a href="assets/gallery/09-preferences-online-log-upload.png"><img src="assets/gallery/09-preferences-online-log-upload.png" width="1177" height="751" alt="Preferences: online log upload" loading="lazy">Preferences: online log upload</a></li>
+      <li><a href="assets/gallery/10-was-statistics.png"><img src="assets/gallery/10-was-statistics.png" width="933" height="779" alt="WAS statistics" loading="lazy">WAS statistics</a></li>
+      <li><a href="assets/gallery/11-dxcc-statistics.png"><img src="assets/gallery/11-dxcc-statistics.png" width="931" height="945" alt="DXCC statistics, paper QSL, LoTW and eQSL" loading="lazy">DXCC statistics, paper QSL, LoTW and eQSL</a></li>
+      <li><a href="assets/gallery/12-contest-window.png"><img src="assets/gallery/12-contest-window.png" width="685" height="395" alt="Contest window: serial numbers, dupe check and automatic CQ" loading="lazy">Contest window: serial numbers, dupe check and automatic CQ</a></li>
+    </ul>
+  </section>
+
+  <section id="about">
+    <h2>What is CQRLOG</h2>
+    <div class="text">
+      <p>CQRLOG is a free, open-source logging program for radio amateurs, meant for everyday HF logging of CW and SSB contacts. While you work a station, it fills in what it knows: country, zones, previous contacts, QSL status and callbook data.</p>
+      <ul class="plain">
+        <li>Rig and rotator control through hamlib</li>
+        <li>DX cluster, RBN and graphical band maps</li>
+        <li>LoTW, eQSL, ClubLog, HamQTH and HRDLog</li>
+        <li>DXCC, WAZ, ITU and IOTA statistics</li>
+        <li>MariaDB/MySQL database, ADIF import and export</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="features">
+    <h2>Features</h2>
+    <div class="text items">
+      <div>
+        <h3>The station, not the computer</h3>
+        <p>Type the callsign and CQRLOG shows the country, CQ and ITU zones, beam heading, your previous contacts with the station and whether it is a new country, band or mode for you. Name, QTH and locator come from HamQTH, QRZ.com or QRZCQ. Super Check Partial suggests calls while you type, and the whole QSO can be logged from the keyboard.</p>
+      </div>
+      <div>
+        <h3>Country resolution you can rely on</h3>
+        <p>DXCC, zones and IOTA are resolved with the country tables maintained by OK1RR, including dated exceptions for individual calls and expeditions. The tables update from inside the program, so old contacts keep the country that was valid at the time.</p>
+      </div>
+      <div>
+        <h3>Radio, rotator and keyer</h3>
+        <p>Frequency and mode are taken from the radio through hamlib, and clicking a spot tunes the radio. The rotator control gets the beam heading of the station you are working. CW goes out from memory keys through WinKeyer, K3NG, cwdaemon or hamlib, and the voice keyer plays recorded messages for SSB.</p>
+      </div>
+      <div>
+        <h3>See who is on the band</h3>
+        <p>DX cluster and the Reverse Beacon Network feed graphical band maps: as many windows as you like, each following the VFO or fixed on a band, with its own filter. Stations you still need stand out, and club membership can be shown next to the call. The grayline map shows where the spots come from.</p>
+      </div>
+      <div>
+        <h3>Digital modes</h3>
+        <p>In remote mode, contacts made in WSJT-X or fldigi are logged automatically, with the same country and QSL information as any other QSO. The WSJT-X monitor highlights CQ calls from stations you have not worked yet.</p>
+      </div>
+      <div>
+        <h3>QSL without the paperwork</h3>
+        <p>LoTW export is signed and uploaded in one step, and confirmations are downloaded back into the log. eQSL works both ways too. ClubLog, HamQTH and HRDLog can receive every QSO right after you save it. For paper QSLs there is a QSL manager database and label export.</p>
+      </div>
+      <div>
+        <h3>Awards and statistics</h3>
+        <p>DXCC, WAZ, ITU, IOTA, worked grids, big squares, DOK and US counties, by band and mode, worked and confirmed. Club membership statistics cover more than a hundred clubs, from FOC to EPC.</p>
+      </div>
+      <div>
+        <h3>Your data stays yours</h3>
+        <p>The log is a MariaDB/MySQL database. CQRLOG can run its own database server in your home directory, or use a server on your network so several computers share one log. Keep as many separate logs as you need, import and export ADIF, export Cabrillo, EDI and SOTA, and let CQRLOG back up the log every time you close it.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="news">
+    <h2>News</h2>
+    <div class="text changelog">
+{{changelog}}
+    </div>
+    <p class="small"><a href="https://github.com/ok2cqr/cqrlog/releases">All releases on GitHub</a> · <a href="https://github.com/ok2cqr/cqrlog/blob/master/CHANGELOG">Full changelog</a> (including changes for developers)</p>
+  </section>
+
+  <section id="download">
+    <h2 style="margin-bottom:4px">Download</h2>
+    <p class="lead">Version {{version}}, released {{date}}. Requires MariaDB or MySQL, hamlib and OpenSSL.</p>
+    <div class="downloads">
+{{downloads}}
+    </div>
+    <p class="small">Source code (GPL v2): <a href="https://github.com/ok2cqr/cqrlog">github.com/ok2cqr/cqrlog</a></p>
+  </section>
+
+  <section id="faq">
+    <h2>FAQ</h2>
+    <div class="text items">
+      <div>
+        <h3>Is this the same program as cqrlog.com?</h3>
+        <p>No. This is the original CQRLOG by Petr Hlozek, OK2CQR. cqrlog.com is now used by <a href="https://github.com/OH1KH/CqrlogImproved">CQRLOGImproved</a> by Saku, OH1KH, a separate fork with its own releases and support. It's better when you mostly use digital modes.</p>
+      </div>
+      <div>
+        <h3>Which package should I use on Linux?</h3>
+        <p>On Ubuntu 26.04+ and Fedora 44 use the native package. On other distributions use Flatpak or Snap. The AppImage is a Qt5 build for older distributions and includes hamlib and MariaDB.</p>
+      </div>
+      <div>
+        <h3>How do I install the Flatpak or the Snap?</h3>
+        <p>Both are files from the release, not from an app store. Flatpak: <code>flatpak install --user cqrlog.flatpak</code>; when you update, add <code>--reinstall</code>, otherwise the old version stays installed. Snap: <code>sudo snap install --dangerous cqrlog_*.snap</code>, then <code>sudo snap connect cqrlog:raw-usb</code> for a serial rig.</p>
+        <p>Neither of them starts its own database server. Install MariaDB on the computer or use one on your network, and untick “Save log data to local machine” in the database connection window.</p>
+      </div>
+      <div>
+        <h3>What do I need on macOS?</h3>
+        <p>A Mac with Apple Silicon and a MariaDB server, for example from Homebrew: <code>brew install mariadb</code> and <code>brew services start mariadb</code>. hamlib and the other libraries are inside the app.</p>
+      </div>
+      <div>
+        <h3>Will an upgrade keep my log?</h3>
+        <p>Yes. The database is upgraded on the first start of a new version; on a large log some upgrades take a while. Turn on the automatic backup in Preferences → Exit / Auto backup, so a copy of the log is saved every time you close CQRLOG.</p>
+      </div>
+      <div>
+        <h3>Can several computers use one log?</h3>
+        <p>Yes. Run MariaDB on one machine in your network and connect to it from each computer. CQRLOG reconnects by itself when the network or the server comes back after an outage.</p>
+      </div>
+      <div>
+        <h3>How do I move my log from another program?</h3>
+        <p>Export it as ADIF and import it in the QSO list window with File → Import → ADIF. Country, zones and statistics are computed during the import.</p>
+      </div>
+      <div>
+        <h3>Does it work with FT8 and other digital modes?</h3>
+        <p>Yes, through WSJT-X and fldigi. Turn on the remote mode in the New QSO window and the contacts you make there are logged automatically.</p>
+      </div>
+      <div>
+        <h3>Where is the documentation?</h3>
+        <p>The built-in help covers setup, the database, radio control and every window. Open it from Help in the menu.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact">
+    <h2>Contact</h2>
+    <p style="margin-bottom:6px">Bugs and feature requests: <a href="https://github.com/ok2cqr/cqrlog/issues">GitHub Issues</a></p>
+    <p style="margin:0">Email: <a href="mailto:petr@ok2cqr.com">petr@ok2cqr.com</a> <span style="color:var(--ink2)">(spare-time project, replies may take a while)</span></p>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>CQRLOG · Petr Hlozek, OK2CQR</span>
+    <span>GPL v2</span>
+    <a href="https://github.com/ok2cqr/cqrlog">GitHub</a>
+  </div>
+</footer>
+
+<script>
+(function () {
+  var btn = document.getElementById('theme');
+  var root = document.documentElement;
+  function current() {
+    return root.getAttribute('data-theme') ||
+      (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  }
+  function label() { btn.textContent = current() === 'dark' ? 'Light mode' : 'Dark mode'; }
+  btn.addEventListener('click', function () {
+    var next = current() === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    try { localStorage.setItem('cqrlog-theme', next); } catch (e) {}
+    label();
+  });
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', label);
+  label();
+})();
+</script>
+
+<dialog id="viewer" aria-label="Screenshot">
+  <img alt="">
+  <p></p>
+  <div class="nav"><button type="button" data-step="-1">← Previous</button><button type="button" data-close>Close</button><button type="button" data-step="1">Next →</button></div>
+</dialog>
+<script>
+(function () {
+  var links = Array.prototype.slice.call(document.querySelectorAll('a.zoom, .gallery a'));
+  var viewer = document.getElementById('viewer');
+  if (!viewer.showModal) return;   // no <dialog>: the links open the image
+  var img = viewer.querySelector('img'), cap = viewer.querySelector('p'), cur = 0;
+  function show(i) {
+    cur = (i + links.length) % links.length;
+    img.src = links[cur].getAttribute('href');
+    // the main screenshot has no caption text, only alt
+    img.alt = cap.textContent = links[cur].textContent || links[cur].querySelector('img').alt;
+  }
+  links.forEach(function (a, i) {
+    a.addEventListener('click', function (e) { e.preventDefault(); show(i); viewer.showModal(); });
+  });
+  viewer.addEventListener('click', function (e) {
+    var step = e.target.getAttribute('data-step');
+    if (step) show(cur + Number(step));
+    else if (e.target === viewer || e.target === img || e.target.hasAttribute('data-close')) viewer.close();
+  });
+  viewer.addEventListener('keydown', function (e) {
+    if (e.key === 'ArrowLeft') show(cur - 1);
+    if (e.key === 'ArrowRight') show(cur + 1);
+  });
+})();
+</script>
+</body>
+</html>

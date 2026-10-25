@@ -1,0 +1,70 @@
+name: Website
+
+# The page is rebuilt from the GitHub releases of ok2cqr/cqrlog, so a new
+# release shows up without touching this repository:
+#  * every 3 hours (also catches the macOS DMG uploaded after the release),
+#  * right away when ok2cqr/cqrlog sends a 'cqrlog-release' repository_dispatch,
+#  * on a push here and by hand (Actions -> Website -> Run workflow).
+# A rebuild that produces the same page as the one online is not deployed.
+
+on:
+  push:
+    branches: [ main ]
+  schedule:
+    - cron: '17 */3 * * *'
+  repository_dispatch:
+    types: [ cqrlog-release ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      changed: ${{ steps.diff.outputs.changed }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Test
+        run: python3 -m unittest test_build
+
+      - name: Build
+        run: python3 build.py
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+
+      - name: Compare with the live site
+        id: diff
+        run: |
+          live=$(curl -fsSL https://cqrlog.ok2cqr.com/index.html | sha256sum | cut -d' ' -f1 || true)
+          new=$(sha256sum dist/index.html | cut -d' ' -f1)
+          if [ "${{ github.event_name }}" = "schedule" ] && [ "$live" = "$new" ]; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "No change, not deploying"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/upload-pages-artifact@v3
+        if: steps.diff.outputs.changed == 'true'
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    if: needs.build.outputs.changed == 'true'
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

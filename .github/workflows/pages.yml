@@ -31,7 +31,7 @@ jobs:
     outputs:
       changed: ${{ steps.diff.outputs.changed }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Test
         run: python3 -m unittest test_build
@@ -53,7 +53,7 @@ jobs:
             echo "changed=true" >> "$GITHUB_OUTPUT"
           fi
 
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v5
         if: steps.diff.outputs.changed == 'true'
         with:
           path: dist
@@ -67,4 +67,4 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5

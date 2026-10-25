@@ -6,7 +6,12 @@ name: Website
 #  * right away when a release is published in ok2cqr/cqrlog
 #    (.github/workflows/06-website.yml there sends a 'cqrlog-release' dispatch),
 #  * on a push here and by hand (Actions -> Website -> Run workflow).
-# A rebuild that produces the same page as the one online is not deployed.
+#
+# The built site is committed to the gh-pages branch, which GitHub Pages
+# serves. Only a change of the content makes a commit, and every commit is a
+# new Pages build. (actions/deploy-pages identifies a deployment by the commit
+# of this repository, so a rebuild for a new release without a new commit here
+# kept serving the previous deployment.)
 
 on:
   push:
@@ -18,9 +23,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
-  pages: write
-  id-token: write
+  contents: write
 
 concurrency:
   group: pages
@@ -29,8 +32,6 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-26.04
-    outputs:
-      changed: ${{ steps.diff.outputs.changed }}
     steps:
       - uses: actions/checkout@v7
 
@@ -42,30 +43,21 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
 
-      - name: Compare with the live site
-        id: diff
+      - name: Publish to gh-pages
         run: |
-          live=$(curl -fsSL https://cqrlog.ok2cqr.com/index.html | sha256sum | cut -d' ' -f1 || true)
-          new=$(sha256sum dist/index.html | cut -d' ' -f1)
-          if [ "${{ github.event_name }}" = "schedule" ] && [ "$live" = "$new" ]; then
-            echo "changed=false" >> "$GITHUB_OUTPUT"
-            echo "No change, not deploying"
-          else
-            echo "changed=true" >> "$GITHUB_OUTPUT"
+          echo cqrlog.ok2cqr.com > dist/CNAME
+          touch dist/.nojekyll
+          old=$(git fetch -q --depth=1 origin gh-pages && git rev-parse 'FETCH_HEAD^{tree}' || true)
+          cd dist
+          git init -q -b gh-pages
+          git add -A
+          if [ "$(git write-tree)" = "$old" ]; then
+            echo "No change, not publishing"
+            exit 0
           fi
-
-      - uses: actions/upload-pages-artifact@v5
-        if: steps.diff.outputs.changed == 'true'
-        with:
-          path: dist
-
-  deploy:
-    needs: build
-    if: needs.build.outputs.changed == 'true'
-    runs-on: ubuntu-26.04
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - id: deployment
-        uses: actions/deploy-pages@v5
+          version=$(grep -o -m1 'Version [0-9.]*' index.html)
+          git -c user.name='github-actions[bot]' \
+              -c user.email='41898282+github-actions[bot]@users.noreply.github.com' \
+              commit -q -m "CQRLOG website, $version (${{ github.event_name }})"
+          git push -q -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" gh-pages
+          echo "Published $version"

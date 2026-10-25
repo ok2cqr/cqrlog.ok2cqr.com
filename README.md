@@ -31,12 +31,12 @@ python3 build.py --changelog ../cqrlog/CHANGELOG --releases releases.json
 `.github/workflows/pages.yml` rebuilds every hour, on push, by hand and right
 after a release is published in ok2cqr/cqrlog (its
 `.github/workflows/06-website.yml` sends a `cqrlog-release` repository_dispatch),
-and deploys to GitHub Pages only when the page changed.
+and commits the result to the `gh-pages` branch only when the page changed.
 
 ## Setup (once)
 
 1. Push this directory as a GitHub repository `ok2cqr/cqrlog.ok2cqr.com`.
-2. Settings → Pages → Source: **GitHub Actions**; custom domain
+2. Settings → Pages → Source: **Deploy from a branch**, `gh-pages` / root (the branch appears after the first run); custom domain
    `cqrlog.ok2cqr.com`, Enforce HTTPS.
 3. DNS: `cqrlog.ok2cqr.com CNAME ok2cqr.github.io.` (replaces the current A record).
 4. For the update right after a release: a fine-grained token with Contents

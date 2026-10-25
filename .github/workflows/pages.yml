@@ -27,7 +27,7 @@ concurrency:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     outputs:
       changed: ${{ steps.diff.outputs.changed }}
     steps:
@@ -61,7 +61,7 @@ jobs:
   deploy:
     needs: build
     if: needs.build.outputs.changed == 'true'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

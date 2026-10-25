@@ -28,8 +28,10 @@ python3 build.py --changelog ../cqrlog/CHANGELOG --releases releases.json
   release that has it, with "(version X)"; a file in no release goes to the
   release list.
 
-`.github/workflows/pages.yml` rebuilds every 3 hours, on push and by hand, and
-deploys to GitHub Pages only when the page changed.
+`.github/workflows/pages.yml` rebuilds every hour, on push, by hand and right
+after a release is published in ok2cqr/cqrlog (its
+`.github/workflows/06-website.yml` sends a `cqrlog-release` repository_dispatch),
+and deploys to GitHub Pages only when the page changed.
 
 ## Setup (once)
 
@@ -37,22 +39,9 @@ deploys to GitHub Pages only when the page changed.
 2. Settings → Pages → Source: **GitHub Actions**; custom domain
    `cqrlog.ok2cqr.com`, Enforce HTTPS.
 3. DNS: `cqrlog.ok2cqr.com CNAME ok2cqr.github.io.` (replaces the current A record).
-4. Optional, for an update right after publishing a release instead of within
-   3 hours: a fine-grained token with Contents read/write on this repository,
-   stored as `WEBSITE_DISPATCH_TOKEN` in ok2cqr/cqrlog, and this workflow there:
-
-   ```yaml
-   on:
-     release:
-       types: [ published ]
-   jobs:
-     website:
-       runs-on: ubuntu-latest
-       steps:
-         - run: gh api repos/ok2cqr/cqrlog.ok2cqr.com/dispatches -f event_type=cqrlog-release
-           env:
-             GH_TOKEN: ${{ secrets.WEBSITE_DISPATCH_TOKEN }}
-   ```
+4. For the update right after a release: a fine-grained token with Contents
+   read/write on this repository, stored as `WEBSITE_DISPATCH_TOKEN` in the
+   Actions secrets of ok2cqr/cqrlog. Without it the hourly rebuild still works.
 
 ## Editing
 

@@ -2,8 +2,9 @@ name: Website
 
 # The page is rebuilt from the GitHub releases of ok2cqr/cqrlog, so a new
 # release shows up without touching this repository:
-#  * every 3 hours (also catches the macOS DMG uploaded after the release),
-#  * right away when ok2cqr/cqrlog sends a 'cqrlog-release' repository_dispatch,
+#  * every hour (also catches the macOS DMG uploaded after the release),
+#  * right away when a release is published in ok2cqr/cqrlog
+#    (.github/workflows/06-website.yml there sends a 'cqrlog-release' dispatch),
 #  * on a push here and by hand (Actions -> Website -> Run workflow).
 # A rebuild that produces the same page as the one online is not deployed.
 
@@ -11,7 +12,7 @@ on:
   push:
     branches: [ main ]
   schedule:
-    - cron: '17 */3 * * *'
+    - cron: '17 * * * *'
   repository_dispatch:
     types: [ cqrlog-release ]
   workflow_dispatch:

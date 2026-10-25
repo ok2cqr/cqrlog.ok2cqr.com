@@ -223,6 +223,11 @@ footer .wrap{padding:20px;font-size:14px;color:var(--ink2);display:flex;flex-wra
         <p>A Mac with Apple Silicon and a MariaDB server, for example from Homebrew: <code>brew install mariadb</code> and <code>brew services start mariadb</code>. hamlib and the other libraries are inside the app.</p>
       </div>
       <div>
+        <h3>CQRLOG says that MySQL could not be started</h3>
+        <p>With “Save log data to local machine” CQRLOG runs its own MariaDB server with the data in <code>~/.config/cqrlog/database</code>. The server program must be installed (<code>mariadb-server</code> on Linux, <code>brew install mariadb</code> on macOS), but the system database service does not have to run.</p>
+        <p>The reason is in <code>~/.config/cqrlog/database/mysql.err</code>; the error window has a button that opens it. Often it is a database server left running after CQRLOG crashed, which ends with a restart of the computer, or “Permission denied” from AppArmor on Ubuntu, which the CQRLOG .deb package sets up. If that does not help, open a GitHub issue and attach the last 20 lines of mysql.err.</p>
+      </div>
+      <div>
         <h3>Will an upgrade keep my log?</h3>
         <p>Yes. The database is upgraded on the first start of a new version; on a large log some upgrades take a while. Turn on the automatic backup in Preferences → Exit / Auto backup, so a copy of the log is saved every time you close CQRLOG.</p>
       </div>

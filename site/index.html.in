@@ -87,6 +87,11 @@ ul.plain{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px}
 .btn{padding:7px 16px;border-radius:5px;background:var(--accent);color:var(--accent-ink);text-decoration:none;font-weight:600;font-size:15px}
 .btn:hover{background:var(--accent-hover);color:var(--accent-ink)}
 .small{margin:14px 0 0;font-size:15px;color:var(--ink2)}
+.subscribe{display:flex;flex-wrap:wrap;align-items:stretch;gap:8px 12px;max-width:560px}
+.subscribe label{flex-basis:100%;font-size:15px;font-weight:600}
+.subscribe input[type=email]{flex:1 1 240px;min-width:0;font:inherit;font-size:16px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:5px;padding:7px 10px}
+.subscribe input[type=email]:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:transparent}
+.subscribe .btn{font-family:inherit;border:0;cursor:pointer;padding:9px 18px}
 
 @media (max-width:640px){header{position:static}html{scroll-padding-top:8px}header .wrap{padding-top:10px;padding-bottom:10px}nav{flex-basis:100%;order:3;gap:4px 16px}}
 .gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:20px 16px;margin:20px 0 0;padding:0;list-style:none}
@@ -118,6 +123,7 @@ footer .wrap{padding:20px;font-size:14px;color:var(--ink2);display:flex;flex-wra
       <a href="#download">Download</a>
       <a href="#faq">FAQ</a>
       <a href="#contact">Contact</a>
+      <a href="#newsletter">Newsletter</a>
     </nav>
     <button id="theme" type="button">Dark mode</button>
   </div>
@@ -267,6 +273,20 @@ footer .wrap{padding:20px;font-size:14px;color:var(--ink2);display:flex;flex-wra
     <h2>Contact</h2>
     <p style="margin-bottom:6px">Bugs and feature requests: <a href="https://github.com/ok2cqr/cqrlog/issues">GitHub Issues</a></p>
     <p style="margin:0">Email: <a href="mailto:petr@ok2cqr.com">petr@ok2cqr.com</a> <span style="color:var(--ink2)">(spare-time project, replies may take a while)</span></p>
+  </section>
+
+  <section id="newsletter">
+    <h2 style="margin-bottom:4px">Newsletter</h2>
+    <p class="lead text">News about CQRLOG and my other projects, now and then. You will get an email to confirm the subscription; every newsletter has an unsubscribe link.</p>
+    <!-- Mailchimp list (ok2cqr.us20). Plain form instead of the generated embed:
+         no jQuery/mc-validate.js, the confirmation opens on Mailchimp in a new tab. -->
+    <form class="subscribe" action="https://ok2cqr.us20.list-manage.com/subscribe/post?u=1f5c0f05382b0beea34da5e6c&amp;id=fa6e24e971&amp;f_id=00c516eaf0" method="post" target="_blank">
+      <label for="mce-EMAIL">Email address</label>
+      <input type="email" name="EMAIL" id="mce-EMAIL" required autocomplete="email" placeholder="you@example.com">
+      <!-- bot trap, real people never fill it in; do not remove -->
+      <div aria-hidden="true" style="position:absolute;left:-5000px"><input type="text" name="b_1f5c0f05382b0beea34da5e6c_fa6e24e971" tabindex="-1" value=""></div>
+      <button class="btn" type="submit">Subscribe</button>
+    </form>
   </section>
 
 </main>
